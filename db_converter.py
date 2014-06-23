@@ -31,6 +31,7 @@ def parse(input_filename, output_filename):
     fulltext_key_lines = []
     sequence_lines = []
     cast_lines = []
+    default_lines = []
     num_inserts = 0
     started = time.time()
 
@@ -114,6 +115,10 @@ def parse(input_filename, output_filename):
                     type = "int4"
                     set_sequence = True
                     final_type = "boolean"
+                    match = re.match('.*DEFAULT \'([0-1])\'', extra)
+                    if match is not None:
+                        default_value = 't' if match.groups(0)[0] == '1' else 'f'
+                        default_lines.append("ALTER TABLE \"%s\" ALTER COLUMN \"%s\" SET DEFAULT '%s'" % (current_table, name, default_value))
                 elif type.startswith("int("):
                     type = "integer"
                     set_sequence = True
@@ -198,6 +203,11 @@ def parse(input_filename, output_filename):
     # Write typecasts out
     output.write("\n-- Typecasts --\n")
     for line in cast_lines:
+        output.write("%s;\n" % line)
+
+    # Write defaults out
+    output.write("\n-- Defaults --\n")
+    for line in default_lines:
         output.write("%s;\n" % line)
 
     # Write FK constraints out
