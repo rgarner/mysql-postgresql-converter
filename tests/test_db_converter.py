@@ -14,7 +14,7 @@ def output():
 	return out
 
 def test_varchar_sizes_are_normal():
-    assert '"path" VARCHAR(1024) NOT NULL,' in output()
+    assert '"path" varchar(1024) NOT NULL,' in output()
 
 def test_non_primary_and_non_unique_indexes_are_kept():
     assert 'CREATE INDEX index_hits_on_mapping_id ON hits (mapping_id);' in output()
