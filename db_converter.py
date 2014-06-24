@@ -28,6 +28,7 @@ def parse(input_filename, output_filename):
     creation_lines = []
     enum_types = []
     foreign_key_lines = []
+    key_lines = []
     fulltext_key_lines = []
     sequence_lines = []
     cast_lines = []
@@ -182,7 +183,7 @@ def parse(input_filename, output_filename):
                 fulltext_key_lines.append("CREATE INDEX ON %s USING gin(to_tsvector('english', %s))" % (current_table, fulltext_keys))
 
             elif line.startswith("KEY"):
-                pass
+                key_lines.append("CREATE INDEX ON \"%s\" (%s)" % (current_table, line.split("(")[1].split(")")[0]))                
             # Is it the end of the table?
             elif line == ");":
                 output.write("CREATE TABLE \"%s\" (\n" % current_table)
@@ -213,6 +214,11 @@ def parse(input_filename, output_filename):
     # Write FK constraints out
     output.write("\n-- Foreign keys --\n")
     for line in foreign_key_lines:
+        output.write("%s;\n" % line)
+
+    # Write KEY indexes out
+    output.write("\n-- KEY Indexes --\n")
+    for line in key_lines:
         output.write("%s;\n" % line)
 
     # Write sequences out
