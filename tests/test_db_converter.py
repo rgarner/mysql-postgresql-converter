@@ -3,8 +3,8 @@ import subprocess
 def output():
 	proc = subprocess.Popen(
 		[
-			"./db_converter.py", 
-			"tests/fixtures/mysqldump_output.sql", 
+			"./db_converter.py",
+			"tests/fixtures/mysqldump_output.sql",
 			"-"
 		],
 		stdout=subprocess.PIPE
