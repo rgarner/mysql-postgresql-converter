@@ -19,6 +19,9 @@ def test_varchar_sizes_are_normal():
 def test_non_primary_and_non_unique_indexes_are_kept():
     assert 'CREATE INDEX "index_hits_on_mapping_id" ON "hits" ("mapping_id");' in output()
 
+def test_unique_constraints_are_kept():
+    assert 'UNIQUE ("abbr")' in output()
+
 def test_defaults_are_kept_via_typecast():
     _output = output()
     assert "\"global_redirect_append_path\" int4 NOT NULL DEFAULT '0'" in _output
