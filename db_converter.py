@@ -183,8 +183,9 @@ def parse(input_filename, output_filename):
                 fulltext_key_lines.append("CREATE INDEX ON %s USING gin(to_tsvector('english', %s))" % (current_table, fulltext_keys))
 
             elif line.startswith("KEY"):
+                index_name = line.split()[1]
                 index_columns = line.split("(")[1].split(")")[0]
-                key_lines.append("CREATE INDEX ON \"%s\" (%s)" % (current_table, index_columns))
+                key_lines.append("CREATE INDEX %s ON \"%s\" (%s)" % (index_name, current_table, index_columns))
             # Is it the end of the table?
             elif line == ");":
                 output.write("CREATE TABLE \"%s\" (\n" % current_table)
