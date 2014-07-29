@@ -29,6 +29,7 @@ def parse(input_filename, output_filename):
     enum_types = []
     foreign_key_lines = []
     key_lines = []
+    unique_lines = []
     fulltext_key_lines = []
     sequence_lines = []
     cast_lines = []
@@ -176,7 +177,12 @@ def parse(input_filename, output_filename):
                 foreign_key_lines.append("ALTER TABLE \"%s\" ADD CONSTRAINT %s DEFERRABLE INITIALLY DEFERRED" % (current_table, line.split("CONSTRAINT")[1].strip().rstrip(",")))
                 foreign_key_lines.append("CREATE INDEX ON \"%s\" %s" % (current_table, line.split("FOREIGN KEY")[1].split("REFERENCES")[0].strip().rstrip(",")))
             elif line.startswith("UNIQUE KEY"):
-                creation_lines.append("UNIQUE (%s)" % line.split("(")[1].split(")")[0])
+                index_name     = line.split()[2]
+                unique_columns = line.split("(")[1].split(")")[0]
+                unique_lines.append(
+                    "CREATE UNIQUE INDEX %s ON %s (%s)" %
+                        (index_name, current_table, unique_columns)
+                    )
             elif line.startswith("FULLTEXT KEY"):
 
                 fulltext_keys = " || ' ' || ".join( line.split('(')[-1].split(')')[0].replace('"', '').split(',') )
@@ -221,6 +227,11 @@ def parse(input_filename, output_filename):
     # Write KEY indexes out
     output.write("\n-- KEY Indexes --\n")
     for line in key_lines:
+        output.write("%s;\n" % line)
+
+    # Write UNIQUE indexes out
+    output.write("\n-- UNIQUE Indexes --\n")
+    for line in unique_lines:
         output.write("%s;\n" % line)
 
     # Write sequences out
