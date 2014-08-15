@@ -194,6 +194,7 @@ def parse(input_filename, output_filename):
                 key_lines.append("CREATE INDEX %s ON \"%s\" (%s)" % (index_name, current_table, index_columns))
             # Is it the end of the table?
             elif line == ");":
+                output.write("DROP TABLE IF EXISTS \"%s\" CASCADE;\n" % current_table)
                 output.write("CREATE TABLE \"%s\" (\n" % current_table)
                 for i, line in enumerate(creation_lines):
                     output.write("    %s%s\n" % (line, "," if i != (len(creation_lines) - 1) else ""))

@@ -30,3 +30,7 @@ def test_defaults_are_kept_via_typecast():
            "ALTER COLUMN \"managed_by_transition\" TYPE boolean USING CAST(\"managed_by_transition\" as boolean);" in actual_output
     assert "-- Defaults --" in actual_output
     assert "ALTER TABLE \"sites\" ALTER COLUMN \"managed_by_transition\" SET DEFAULT 't';" in actual_output
+
+def test_existing_tables_are_dropped_before_create():
+    actual_output = output()
+    assert "DROP TABLE IF EXISTS \"hits\" CASCADE;\nCREATE TABLE \"hits\" (" in actual_output
