@@ -34,3 +34,7 @@ def test_defaults_are_kept_via_typecast():
 def test_existing_tables_are_dropped_before_create():
     actual_output = output()
     assert "DROP TABLE IF EXISTS \"hits\" CASCADE;\nCREATE TABLE \"hits\" (" in actual_output
+
+def test_create_sequences_owned_by_column():
+    actual_output = output()
+    assert "CREATE SEQUENCE hits_id_seq OWNED BY hits.id;" in actual_output
